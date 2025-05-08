@@ -1,0 +1,6 @@
+-std=c++20
+-Idev/
+-Idev/core
+-Ivendor/
+-I/usr/include/gtkmm-4.0
+-Ivendor/app-kit/dev/
