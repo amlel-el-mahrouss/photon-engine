@@ -55,7 +55,7 @@ namespace Photon
 		enum
 		{
 			kHeadingInvalid = 0,
-			kHeading1 = 100,
+			kHeading1		= 100,
 			kHeading2,
 			kHeading3,
 			kHeading4,
@@ -231,6 +231,14 @@ namespace Photon
 				return false;
 
 			h_image_path = url_img;
+
+			if (h_image_content)
+			{
+				[h_image_content release];
+			}
+
+			h_image_content = [[NSImage alloc] initWithContentsOfURL:h_image_path];
+
 			return true;
 		}
 
@@ -240,6 +248,7 @@ namespace Photon
 				return false;
 
 			this->h_child_element.push_back(dom_elem);
+
 			return true;
 		}
 
@@ -248,9 +257,15 @@ namespace Photon
 			return false;
 		}
 
-		size_t width() { return h_image_content.size.width; }
+		size_t width()
+		{
+			return h_image_content.size.width;
+		}
 
-		size_t height() { return h_image_content.size.height; }
+		size_t height()
+		{
+			return h_image_content.size.height;
+		}
 
 		bool remove_child_element(IPhotonDOM* dom_elem) override
 		{
@@ -288,10 +303,8 @@ namespace Photon
 
 		bool insert_element(NSWindow* window) override
 		{
-			if (!h_renderable || !window || h_image_content)
+			if (!h_renderable || !window)
 				return false;
-
-			h_image_content = [[NSImage alloc] initWithContentsOfURL:h_image_path];
 
 			if (!h_image_content)
 			{

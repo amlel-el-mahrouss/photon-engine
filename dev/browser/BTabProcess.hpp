@@ -44,7 +44,10 @@ namespace Photon
 
 			m_tab_name = url.get();
 
-			IPhotonTextDOM* kRootDOM = nullptr;
+			IPhotonTextDOM* kRootDOM = new IPhotonTextDOM();
+
+			int pos_y = 700;
+			int pos_x = 10;
 
 			if (m_dom)
 			{
@@ -57,9 +60,6 @@ namespace Photon
 				if (auto elem = m_dom->get_node("body"); elem)
 				{
 					elem = elem->first_node();
-
-					int pos_y = 700;
-					int pos_x = 10;
 
 					while (elem)
 					{
@@ -88,12 +88,6 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
-							if (!kRootDOM)
-							{
-								kRootDOM = text;
-								continue;
-							}
-
 							kRootDOM->insert_child_element(text);
 						}
 						else if (elem_nm == "h2")
@@ -118,12 +112,6 @@ namespace Photon
 							pos_y -= 24.0;
 
 							text->set_position(pos_x, pos_y);
-
-							if (!kRootDOM)
-							{
-								kRootDOM = text;
-								continue;
-							}
 
 							kRootDOM->insert_child_element(text);
 						}
@@ -150,12 +138,6 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
-							if (!kRootDOM)
-							{
-								kRootDOM = text;
-								continue;
-							}
-
 							kRootDOM->insert_child_element(text);
 						}
 						else if (elem_nm == "h4" || elem_nm == "h5")
@@ -180,12 +162,6 @@ namespace Photon
 							pos_y -= 13.28;
 
 							text->set_position(pos_x, pos_y);
-
-							if (!kRootDOM)
-							{
-								kRootDOM = text;
-								continue;
-							}
 
 							kRootDOM->insert_child_element(text);
 						}
@@ -212,12 +188,6 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
-							if (!kRootDOM)
-							{
-								kRootDOM = text;
-								continue;
-							}
-
 							kRootDOM->insert_child_element(text);
 						}
 						else if (elem_nm == "button")
@@ -230,32 +200,19 @@ namespace Photon
 							pos_y -= 50;
 
 							text->set_position(pos_x, pos_y);
-
-							if (!kRootDOM)
-							{
-								kRootDOM = text;
-								continue;
-							}
-
 							kRootDOM->insert_child_element(text);
 						}
 						else if (elem_nm == "img")
 						{
 							IPhotonImageDOM* text = new IPhotonImageDOM();
 
-                            text->set_image_url([[NSURL alloc] initWithString:[NSString stringWithUTF8String:elem->first_attribute("src")->value()]]);
+							text->set_image_url([[NSURL alloc] initWithString:[NSString stringWithUTF8String:elem->first_attribute("src")->value()]]);
 							text->set_content_text([NSString stringWithUTF8String:elem->value()]);
 							text->set_heading(IPhotonTextDOM::kHeadingParagraph);
 
 							pos_y -= text->height();
 
 							text->set_position(pos_x, pos_y);
-
-							if (!kRootDOM)
-							{
-								kRootDOM = text;
-								continue;
-							}
 
 							kRootDOM->insert_child_element(text);
 						}
@@ -282,12 +239,6 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
-							if (!kRootDOM)
-							{
-								kRootDOM = text;
-								continue;
-							}
-
 							kRootDOM->insert_child_element(text);
 						}
 
@@ -297,15 +248,6 @@ namespace Photon
 
 				ShellFactory tab;
 				auto		 tab_win = tab.tab(m_tab_name);
-
-#ifdef __APPLE__
-				[tab_win setSubtitle:[NSString stringWithUTF8String:url.get().c_str()]];
-
-				NSToolbar* toolbar				= [[NSToolbar alloc] initWithIdentifier:@"NSToolbarIdentifierTab"];
-				toolbar.allowsUserCustomization = YES;
-				toolbar.displayMode				= NSToolbarDisplayModeIconAndLabel;
-				[tab_win setToolbar:toolbar];
-#endif
 
 				kRootDOM->insert_element(tab_win);
 

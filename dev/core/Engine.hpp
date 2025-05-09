@@ -77,20 +77,50 @@ namespace Photon
 		ShellFactory& operator=(const ShellFactory&) = default;
 		ShellFactory(const ShellFactory&)			 = default;
 
+	private:
+		NSWindow*	window{nullptr};
+		NSScroller* scroller{nullptr};
+
+		/// @internal
+		void scroller_moved_(NSScroller* sender)
+		{
+			(void)sender;
+
+			double	val			  = [scroller doubleValue]; // 0.0 (top) to 1.0 (bottom)
+			CGFloat contentHeight = NSHeight([window.contentView frame]);
+			CGFloat maxOffset	  = contentHeight;
+
+			NSRect f				   = [window.contentView frame];
+			f.origin.y				   = -val * maxOffset;
+			[window.contentView frame] = f;
+		}
+
+	public:
 		NSWindow* tab(const String text)
 		{
-			NSWindow* window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 1280, 720)
-														   styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable)
-															 backing:NSBackingStoreBuffered
-															   defer:NO];
+			if (window)
+				return window;
 
-			[window setTitle:[NSString stringWithUTF8String:((!text.empty()) ? text.c_str() : "Photon")]];
+			window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 1280, 720)
+												 styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable)
+												   backing:NSBackingStoreBuffered
+													 defer:NO];
+
+			[window setTitle:[NSString stringWithUTF8String:((!text.empty()) ? text.c_str() : "Untitled - Photon")]];
 			[window center];
 
 			[window setBackgroundColor:[NSColor whiteColor]];
 
 			[window makeKeyAndOrderFront:nil];
 			[window setLevel:NSStatusWindowLevel];
+
+			scroller = [[NSScroller alloc] initWithFrame:NSMakeRect(0, 0, 1280, 720)];
+
+			[scroller setTarget:window];
+			[scroller setKnobProportion:0.2];
+			[scroller setDoubleValue:0.0];
+			[scroller setAction:@selector(scroller_moved_)];
+			[window.contentView addSubview:scroller];
 
 			return window;
 		}
