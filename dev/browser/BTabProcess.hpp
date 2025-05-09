@@ -44,6 +44,8 @@ namespace Photon
 
 			m_tab_name = url.get();
 
+			IPhotonTextDOM* kRootDOM = nullptr;
+
 			if (m_dom)
 			{
 				if (auto elem = m_dom->get_node("head"); elem)
@@ -86,6 +88,12 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
+							if (!kRootDOM)
+							{
+								kRootDOM = text;
+								continue;
+							}
+
 							kRootDOM->insert_child_element(text);
 						}
 						else if (elem_nm == "h2")
@@ -110,6 +118,12 @@ namespace Photon
 							pos_y -= 24.0;
 
 							text->set_position(pos_x, pos_y);
+
+							if (!kRootDOM)
+							{
+								kRootDOM = text;
+								continue;
+							}
 
 							kRootDOM->insert_child_element(text);
 						}
@@ -136,6 +150,12 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
+							if (!kRootDOM)
+							{
+								kRootDOM = text;
+								continue;
+							}
+
 							kRootDOM->insert_child_element(text);
 						}
 						else if (elem_nm == "h4" || elem_nm == "h5")
@@ -160,6 +180,12 @@ namespace Photon
 							pos_y -= 13.28;
 
 							text->set_position(pos_x, pos_y);
+
+							if (!kRootDOM)
+							{
+								kRootDOM = text;
+								continue;
+							}
 
 							kRootDOM->insert_child_element(text);
 						}
@@ -186,6 +212,12 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
+							if (!kRootDOM)
+							{
+								kRootDOM = text;
+								continue;
+							}
+
 							kRootDOM->insert_child_element(text);
 						}
 						else if (elem_nm == "button")
@@ -198,6 +230,12 @@ namespace Photon
 							pos_y -= 50;
 
 							text->set_position(pos_x, pos_y);
+
+							if (!kRootDOM)
+							{
+								kRootDOM = text;
+								continue;
+							}
 
 							kRootDOM->insert_child_element(text);
 						}
@@ -213,14 +251,20 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
+							if (!kRootDOM)
+							{
+								kRootDOM = text;
+								continue;
+							}
+
 							kRootDOM->insert_child_element(text);
 						}
-						else if (elem_nm == "p")
+						else if (elem_nm == "p" || elem_nm == "b" || elem_nm == "strong")
 						{
 							IPhotonTextDOM* text = new IPhotonTextDOM();
 
 							text->set_content_text([NSString stringWithUTF8String:elem->value()]);
-							text->set_heading(IPhotonTextDOM::kHeadingParagraph);
+							text->set_heading((elem_nm == "b" || elem_nm == "strong") ? IPhotonTextDOM::kHeadingBold : IPhotonTextDOM::kHeadingParagraph);
 
 							pos_y -= 16;
 
@@ -237,6 +281,12 @@ namespace Photon
 							pos_y -= 16;
 
 							text->set_position(pos_x, pos_y);
+
+							if (!kRootDOM)
+							{
+								kRootDOM = text;
+								continue;
+							}
 
 							kRootDOM->insert_child_element(text);
 						}

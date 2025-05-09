@@ -54,7 +54,7 @@ namespace Photon
 	public:
 		enum
 		{
-			kHeadingInvalid,
+			kHeadingInvalid = 0,
 			kHeading1 = 100,
 			kHeading2,
 			kHeading3,
@@ -62,6 +62,8 @@ namespace Photon
 			kHeading5,
 			kHeading6,
 			kHeadingParagraph,
+			kHeadingBold = kHeading5,
+			kHeadingItalic,
 		};
 
 		void set_heading(int32_t text)
@@ -104,8 +106,8 @@ namespace Photon
 		CGFloat					 h_y{0};
 
 	protected:
-		NSString* h_font{@"SF Compact Rounded"};
-		NSString* h_font_bold{@"SF Compact Rounded Bold"};
+		NSString* h_font{@"FreeMono"};
+		NSString* h_font_bold{@"FreeMonoBold"};
 		NSString* h_markup_content{@""};
 		CGFloat	  h_font_sz{16.0f};
 	};
@@ -177,7 +179,7 @@ namespace Photon
 				return false;
 
 			h_content = [[NSTextView alloc]
-				initWithFrame:PTMakeRect(this->h_x, this->h_y,
+				initWithFrame:NSMakeRect(this->h_x, this->h_y,
 										 this->h_font_sz *
 											 [this->h_markup_content length],
 										 this->h_font_sz)];
@@ -294,7 +296,7 @@ namespace Photon
 			if (!h_image_content)
 			{
 				h_placeholder_content = [[NSTextView alloc]
-					initWithFrame:PTMakeRect(this->h_x, this->h_y,
+					initWithFrame:NSMakeRect(this->h_x, this->h_y,
 											 this->h_font_sz *
 												 [this->h_markup_content length],
 											 this->h_font_sz)];
@@ -319,7 +321,7 @@ namespace Photon
 			else
 			{
 				h_image_view = [[NSImageView alloc]
-					initWithFrame:PTMakeRect(this->h_x, this->h_y,
+					initWithFrame:NSMakeRect(this->h_x, this->h_y,
 											 [h_image_content size].width,
 											 [h_image_content size].height)];
 
@@ -443,6 +445,4 @@ namespace Photon
 			return true;
 		}
 	};
-
-	inline IPhotonTextDOM* kRootDOM = new IPhotonTextDOM();
 } // namespace Photon
