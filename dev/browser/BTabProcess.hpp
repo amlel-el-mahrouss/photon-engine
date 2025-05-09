@@ -49,6 +49,8 @@ namespace Photon
 			int pos_y = 700;
 			int pos_x = 10;
 
+			ShellFactory tab;
+
 			if (m_dom)
 			{
 				if (auto elem = m_dom->get_node("head"); elem)
@@ -202,6 +204,10 @@ namespace Photon
 							text->set_position(pos_x, pos_y);
 							kRootDOM->insert_child_element(text);
 						}
+						else if (elem_nm == "photon-popup" && elem->value())
+						{
+							(void)tab.prompt(m_tab_name, elem->value());
+						}
 						else if (elem_nm == "img")
 						{
 							IPhotonImageDOM* text = new IPhotonImageDOM();
@@ -246,7 +252,6 @@ namespace Photon
 					}
 				}
 
-				ShellFactory tab;
 				auto		 tab_win = tab.tab(m_tab_name);
 
 				kRootDOM->insert_element(tab_win);

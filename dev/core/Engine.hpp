@@ -125,18 +125,31 @@ namespace Photon
 			return window;
 		}
 
-		String prompt(const String text)
+		String prompt(const String title, const String text = "")
 		{
 			NSWindow* modal_window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 400, 200)
 																 styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable)
 																   backing:NSBackingStoreBuffered
 																	 defer:NO];
-			[modal_window setTitle:[NSString stringWithUTF8String:((!text.empty()) ? text.c_str() : "Photon")]];
+			[modal_window setTitle:[NSString stringWithUTF8String:((!title.empty()) ? title.c_str() : "Photon")]];
 			[modal_window center];
+
+			auto content = [[NSTextView alloc]
+							initWithFrame:NSMakeRect(0, 168,
+													 12 * [[NSString stringWithUTF8String: text.c_str()] length],
+													 12)];
+
+			[content setTextColor:[NSColor blackColor]];
+			[content setBackgroundColor:[NSColor clearColor]];
+			[content setString:[NSString stringWithUTF8String: text.c_str()]];
+
+			[content
+				setFont:[NSFont fontWithName:@"FreeMono" size:12]];
+			[[modal_window contentView] addSubview:content];
 
 			NSInteger result = [[NSApplication sharedApplication] runModalForWindow:modal_window];
 
-			return "NO";
+			return NSModalResponseOK ? "YES" : "NO";
 		}
 
 		bool grant_or_fail(const String permission_name)
@@ -146,7 +159,7 @@ namespace Photon
 			if (std::find(kPermsList.cbegin(), kPermsList.cend(), permission_name) != kPermsList.end())
 				return true;
 
-			if (this->prompt("The page is asking for: " + permission_name + "\nAccept?") == "NO")
+			if (this->prompt("Permission Manager", "The page is asking for: " + permission_name + "\nAccept?") == "NO")
 				return false;
 
 			kPermsList.push_back(permission_name);
