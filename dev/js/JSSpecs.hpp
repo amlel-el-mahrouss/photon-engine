@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <core/Engine.hpp>
+#include <core/Core.hpp>
 #include <js/JITSpecs.hpp>
 
 #define PHOTON_JS_UNDEFINED "undefined"

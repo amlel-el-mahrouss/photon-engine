@@ -26,8 +26,8 @@
 PHOTON_API void	  photon_log(const char* str);
 PHOTON_API size_t photon_strlen(const char* str);
 PHOTON_API time_t photon_get_epoch();
-PHOTON_API FILE*  photon_get_logger();
-PHOTON_API bool	  photon_open_logger();
+PHOTON_API FILE* photon_get_logger();
+PHOTON_API bool	 photon_open_logger();
 
 namespace Photon
 {
@@ -114,42 +114,21 @@ namespace Photon
 			[window makeKeyAndOrderFront:nil];
 			[window setLevel:NSStatusWindowLevel];
 
-			scroller = [[NSScroller alloc] initWithFrame:NSMakeRect(0, 0, 1280, 720)];
-
-			[scroller setTarget:window];
-			[scroller setKnobProportion:0.2];
-			[scroller setDoubleValue:0.0];
-			[scroller setAction:@selector(scroller_moved_)];
-			[window.contentView addSubview:scroller];
-
 			return window;
 		}
 
 		String prompt(const String title, const String text = "")
 		{
-			NSWindow* modal_window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 400, 200)
-																 styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable)
-																   backing:NSBackingStoreBuffered
-																	 defer:NO];
-			[modal_window setTitle:[NSString stringWithUTF8String:((!title.empty()) ? title.c_str() : "Photon")]];
-			[modal_window center];
+			NSAlert* alert = [[NSAlert alloc] init];
+			[alert setMessageText:[NSString stringWithUTF8String:((!title.empty()) ? title.c_str() : "Photon")]];
+			[alert setInformativeText:[NSString stringWithUTF8String:text.c_str()]];
+			[alert addButtonWithTitle:@"OK"];
+			[alert addButtonWithTitle:@"Cancel"];
+			[alert setAlertStyle:NSAlertStyleInformational];
 
-			auto content = [[NSTextView alloc]
-							initWithFrame:NSMakeRect(0, 168,
-													 12 * [[NSString stringWithUTF8String: text.c_str()] length],
-													 12)];
+			NSModalResponse response = [alert runModal];
 
-			[content setTextColor:[NSColor blackColor]];
-			[content setBackgroundColor:[NSColor clearColor]];
-			[content setString:[NSString stringWithUTF8String: text.c_str()]];
-
-			[content
-				setFont:[NSFont fontWithName:@"FreeMono" size:12]];
-			[[modal_window contentView] addSubview:content];
-
-			NSInteger result = [[NSApplication sharedApplication] runModalForWindow:modal_window];
-
-			return NSModalResponseOK ? "YES" : "NO";
+			return response == NSAlertFirstButtonReturn ? "YES" : "NO";
 		}
 
 		bool grant_or_fail(const String permission_name)

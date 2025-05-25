@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Tab</title>
+  <style type="text/css">
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: linear-gradient(to bottom, #1a1a1a, #2c2c2c);
+      color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+
+    .search-bar {
+      margin-top: 40px;
+    }
+
+    input[type="text"] {
+      width: 500px;
+      max-width: 90vw;
+      padding: 12px;
+      font-size: 1.2em;
+      border: 1px solid #555;
+      border-radius: 8px;
+      background-color: #333;
+      color: #f0f0f0;
+    }
+
+    .speed-dial {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+      width: 90%;
+      max-width: 960px;
+      margin-top: 40px;
+      padding-bottom: 60px;
+    }
+
+    .tile {
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .tile:hover {
+      transform: scale(1.03);
+      background: #3a3a3a;
+    }
+
+    .tile h3 {
+      margin: 10px 0 0;
+      font-size: 1em;
+      color: #f0f0f0;
+    }
+
+    .tile img {
+      filter: brightness(0.9);
+    }
+  </style>
+</head>
+<body>
+  <div class="search-bar">
+    <form action="https://duckduckgo.com/" method="get">
+      <input type="text" name="q" placeholder="Search the web..." />
+    </form>
+  </div>
+
+  <div class="speed-dial">
+    <div class="tile" onclick="document.location.href='https://news.ycombinator.com/'">
+      <img src="https://news.ycombinator.com/favicon.ico" alt="Hacker News" width="32" height="32" />
+      <h3>Hacker News</h3>
+    </div>
+    <div class="tile" onclick="document.location.href='https://github.com/'">
+      <img src="https://github.githubassets.com/favicons/favicon.svg" alt="GitHub" width="32" height="32" />
+      <h3>GitHub</h3>
+    </div>
+    <div class="tile" onclick="document.location.href='https://www.reddit.com/'">
+      <img src="https://www.redditstatic.com/desktop2x/img/favicon/favicon-32x32.png" alt="Reddit" width="32" height="32" />
+      <h3>Reddit</h3>
+    </div>
+    <div class="tile" onclick="document.location.href='https://mail.google.com/'">
+      <img src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico" alt="Gmail" width="32" height="32" />
+      <h3>Gmail</h3>
+    </div>
+  </div>
+</body>
+</html>

@@ -11,7 +11,7 @@
 
 #ifndef _WIN32
 
-#include <core/Engine.hpp>
+#include <core/Core.hpp>
 #include <stdarg.h>
 #include <sys/mman.h>
 

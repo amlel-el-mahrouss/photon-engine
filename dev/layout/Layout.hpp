@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <core/Engine.hpp>
+#include <core/Core.hpp>
 
 namespace Photon
 {
@@ -106,8 +106,14 @@ namespace Photon
 		CGFloat					 h_y{0};
 
 	protected:
+#ifndef __PHOTON_APPLE__
 		NSString* h_font{@"FreeMono"};
 		NSString* h_font_bold{@"FreeMonoBold"};
+#else
+		NSString* h_font{@"Times New Roman"};
+		NSString* h_font_bold{@"Times New Roman Bold"};
+#endif
+
 		NSString* h_markup_content{@""};
 		CGFloat	  h_font_sz{16.0f};
 	};

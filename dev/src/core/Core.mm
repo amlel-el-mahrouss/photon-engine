@@ -11,7 +11,7 @@
 @file
 */
 
-#include <core/Engine.hpp>
+#include <core/Core.hpp>
 
 size_t photon_strlen(const char* buffer)
 {

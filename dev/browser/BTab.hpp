@@ -9,28 +9,33 @@
 
 #pragma once
 
-#include <core/Engine.hpp>
+#include <core/Core.hpp>
 #include <core/URL.hpp>
 #include <dom/IDOMObject.hpp>
 #include <dom/IScriptObject.hpp>
-#include <unistd.h>
 #include <layout/Layout.hpp>
+
+#include <libxml/HTMLparser.h>
+#include <libxml/xmlsave.h>
+#include <unistd.h>
 
 namespace Photon
 {
-	class PHOTON_API BTabProcess
+	class PHOTON_API BTab
 	{
 	private:
 		URL			m_tab_url{PHOTON_HTTPS_PROTOCOL};
-		String		m_tab_name{"New Tab"};
+		String		m_tab_name{"Loading..."};
 		String		m_html_blob{PHOTON_EMPTY_HTML};
 		IDOMObject* m_dom{nullptr};
+		IPhotonTextDOM* m_document_root{new IPhotonTextDOM()};
+		NSWindow*	m_tab_handle{nullptr};
 
 	public:
-		BTabProcess()		   = default;
-		virtual ~BTabProcess() = default;
+		BTab()			= default;
+		virtual ~BTab() = default;
 
-		PHOTON_COPY_DEFAULT(BTabProcess);
+		PHOTON_COPY_DEFAULT(BTab);
 
 		bool load(URL url) noexcept
 		{
@@ -42,9 +47,6 @@ namespace Photon
 
 			m_dom = IDOMObject::make_dom_object(m_html_blob);
 
-			m_tab_name = url.get();
-
-			IPhotonTextDOM* kRootDOM = new IPhotonTextDOM();
 
 			int pos_y = 700;
 			int pos_x = 10;
@@ -55,11 +57,18 @@ namespace Photon
 			{
 				if (auto elem = m_dom->get_node("head"); elem)
 				{
-					if (elem->first_node("title")->value())
+					if (elem->first_node("title") && elem->first_node("title")->value())
 						m_tab_name = elem->first_node("title")->value();
+
+					if (elem->first_node("meta"))
+					{
+
+					}
 				}
 
-				if (auto elem = m_dom->get_node("body"); elem)
+				auto elem = m_dom->get_node("body");
+
+				if (elem)
 				{
 					elem = elem->first_node();
 
@@ -90,7 +99,7 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
-							kRootDOM->insert_child_element(text);
+							m_document_root->insert_child_element(text);
 						}
 						else if (elem_nm == "h2")
 						{
@@ -115,7 +124,7 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
-							kRootDOM->insert_child_element(text);
+							m_document_root->insert_child_element(text);
 						}
 						else if (elem_nm == "h3")
 						{
@@ -140,7 +149,7 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
-							kRootDOM->insert_child_element(text);
+							m_document_root->insert_child_element(text);
 						}
 						else if (elem_nm == "h4" || elem_nm == "h5")
 						{
@@ -165,7 +174,7 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
-							kRootDOM->insert_child_element(text);
+							m_document_root->insert_child_element(text);
 						}
 						else if (elem_nm == "h6")
 						{
@@ -190,7 +199,7 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
-							kRootDOM->insert_child_element(text);
+							m_document_root->insert_child_element(text);
 						}
 						else if (elem_nm == "button")
 						{
@@ -202,17 +211,26 @@ namespace Photon
 							pos_y -= 50;
 
 							text->set_position(pos_x, pos_y);
-							kRootDOM->insert_child_element(text);
+							m_document_root->insert_child_element(text);
 						}
 						else if (elem_nm == "photon-popup" && elem->value())
 						{
-							(void)tab.prompt(m_tab_name, elem->value());
+							(void)tab.prompt(m_tab_name, elem->first_attribute("message")->value());
 						}
 						else if (elem_nm == "img")
 						{
 							IPhotonImageDOM* text = new IPhotonImageDOM();
 
-							text->set_image_url([[NSURL alloc] initWithString:[NSString stringWithUTF8String:elem->first_attribute("src")->value()]]);
+							String image_src = elem->first_attribute("src")->value();
+
+							if (!image_src.starts_with("http://") &&
+								!image_src.starts_with("https://") &&
+								!image_src.starts_with("file://"))
+							{
+								image_src = m_tab_url.protocol() + "://" + m_tab_url.get() + image_src;
+							}
+
+							text->set_image_url([[NSURL alloc] initWithString:[NSString stringWithUTF8String:image_src.c_str()]]);
 							text->set_content_text([NSString stringWithUTF8String:elem->value()]);
 							text->set_heading(IPhotonTextDOM::kHeadingParagraph);
 
@@ -220,7 +238,7 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
-							kRootDOM->insert_child_element(text);
+							m_document_root->insert_child_element(text);
 						}
 						else if (elem_nm == "p" || elem_nm == "b" || elem_nm == "strong")
 						{
@@ -245,16 +263,15 @@ namespace Photon
 
 							text->set_position(pos_x, pos_y);
 
-							kRootDOM->insert_child_element(text);
+							m_document_root->insert_child_element(text);
 						}
 
 						elem = elem->next_sibling();
 					}
 				}
 
-				auto		 tab_win = tab.tab(m_tab_name);
-
-				kRootDOM->insert_element(tab_win);
+				m_tab_handle = tab.tab(m_tab_name);
+				m_document_root->insert_element(m_tab_handle);
 
 				return true;
 			}
@@ -265,6 +282,9 @@ namespace Photon
 		void release()
 		{
 			delete m_dom;
+
+			delete m_document_root;
+			m_document_root = nullptr;
 
 			m_html_blob.clear();
 			m_tab_name.clear();

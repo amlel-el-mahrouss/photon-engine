@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <core/Engine.hpp>
+#include <core/Core.hpp>
 #include <core/Socket.hpp>
 
 // OpenSSL headers.
@@ -20,8 +20,8 @@
 
 #define PHOTON_HTTP_VER 1.1
 
-#define PHOTON_USE_HTTPS 443
-#define PHOTON_USE_HTTP	 80
+#define PHOTON_USE_HTTPS (443)
+#define PHOTON_USE_HTTP	 (80)
 
 namespace Photon::HTTP
 {

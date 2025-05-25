@@ -7,11 +7,5 @@
  * =====================================================================
  */
 
-#pragma once
+#include <browser/BTab.hpp>
 
-#include <Engine.hpp>
-
-namespace Photon
-{
-
-}

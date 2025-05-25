@@ -1,7 +1,14 @@
 {
   "compiler_path": "clang++",
   "compiler_std": "c++20",
-  "headers_path": ["./", "/usr/include/GNUstep", "./core", "../vendor", "../vendor/app-kit/dev", "/usr/lib/gcc/x86_64-linux-gnu/13/include"],
+  "headers_path": [
+    "./",
+    "/usr/include/GNUstep",
+    "./core",
+    "../vendor",
+    "../vendor/app-kit/dev",
+    "/usr/lib/gcc/x86_64-linux-gnu/13/include"
+  ],
   "sources_path": [
     "src/browser/*.mm",
     "src/core/*.mm",
@@ -16,7 +23,8 @@
     "-lobjc",
     "-lgnustep-base",
     "-lgnustep-gui",
-    "-fconstant-string-class=NSConstantString"
+    "-fconstant-string-class=NSConstantString",
+    "$(xml2-config --cflags --libs)"
   ],
   "cpp_macros": [
     "__PHOTON__",

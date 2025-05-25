@@ -16,24 +16,24 @@
 #ifdef PHOTON_WINDOWS
 #define PHOTON_GET_DATA_DIR(DIR)            \
 	Photon::String DIR = getenv("APPDATA"); \
-	DIR += "/.zka/";
+	DIR += "/.PHOTON/";
 
 #else
 #define PHOTON_GET_DATA_DIR(DIR)         \
 	Photon::String DIR = getenv("HOME"); \
-	DIR += "/.zka/";
+	DIR += "/.PHOTON/";
 
 #endif
 
 #ifdef PHOTON_PHOTON_OS
 #define PHOTON_GET_DATA_DIR(DIR)            \
 	Photon::String DIR = EnvGetVar("HOME"); \
-	DIR += "\\.zka\\";
+	DIR += "\\.PHOTON\\";
 
 #else
 #define PHOTON_GET_DATA_DIR(DIR)         \
 	Photon::String DIR = getenv("HOME"); \
-	DIR += "/.zka/";
+	DIR += "/.PHOTON/";
 
 #endif
 #endif // ifndef PHOTON_GET_DATA_DIR

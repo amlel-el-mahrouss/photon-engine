@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <core/Engine.hpp>
+#include <core/Core.hpp>
 #include <rapidxml/rapidxml.hpp>
 
 #define PHOTON_DOM_OBJECT	 (0U)
