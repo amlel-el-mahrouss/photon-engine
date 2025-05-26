@@ -13,8 +13,10 @@
 #include <rapidxml/rapidxml.hpp>
 
 #define PHOTON_DOM_OBJECT	 (0U)
-#define PHOTON_HTML_DOCTYPE	 "<!doctype html>"
-#define PHOTON_XHTML_DOCTYPE "<html xmlns=\"http://www.w3.org/1999/xhtml\">"
+
+#define PHOTON_HTML_START	 "<html>"
+#define PHOTON_HTML_MARKUP "<!doctype html>"
+#define PHOTON_HTML_END	 "</html>"
 
 namespace Photon
 {
@@ -109,14 +111,8 @@ namespace Photon
 	};
 
 	/// @brief Check if xml is HTML.
-	bool is_html_document(String the_xml_blob) noexcept;
-
-	/// @brief Check if xml is XHTML document.
-	bool is_xhtml_document(String the_xml_blob) noexcept;
+	Bool is_html_document(String the_xml_blob) noexcept;
 
 	/// @brief Get HTML document from xml blob.
 	String get_html_document(String the_xml_blob) noexcept;
-
-	/// @brief Get HTML document from xml blob.
-	String get_xhtml_document(String the_xml_blob) noexcept;
 } // namespace Photon

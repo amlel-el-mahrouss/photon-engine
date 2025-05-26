@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <Core.hpp>
+#include <core/Core.hpp>
 
 #define PHOTON_RIFF_MAG "RIFF"
 

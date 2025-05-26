@@ -7,97 +7,86 @@
  * =====================================================================
  */
 
-#include <cstddef>
 #include <dom/IDOMObject.hpp>
-#include <layout/Layout.hpp>
+#include <layout/RenderSystem+OpenStep.hpp>
 
-extern int Photon_SummonTab(int argc, Photon::IPhotonDOM* argv[]);
+#include <libxml/HTMLparser.h>
+#include <libxml/xmlsave.h>
 
-namespace Photon
-{
-	bool is_html_document(String data) noexcept
-	{
-		std::transform(data.begin(), data.end(), data.begin(),
-					   [](unsigned char c) { return std::tolower(c); });
+extern int Photon_SummonTab(int argc, Photon::IPhotonDOM *argv[]);
 
-		return data.find(PHOTON_HTML_DOCTYPE) != String::npos &&
-			   data.find(PHOTON_XHTML_DOCTYPE) == String::npos;
-	}
+namespace Photon {
+bool is_html_document(String data) noexcept {
+  std::transform(data.begin(), data.end(), data.begin(),
+                 [](unsigned char c) { return std::tolower(c); });
 
-	/// @brief Check if xml is XHTML document.
-	bool is_xhtml_document(String data) noexcept
-	{
-		return data.find(PHOTON_XHTML_DOCTYPE) != String::npos;
-	}
+  const auto kPhotonXMLMarkup = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
 
-	/// @brief Get HTML document from xml blob.
-	String get_xhtml_document(String data) noexcept
-	{
-		if (!is_xhtml_document(data))
-		{
-			return PHOTON_EMPTY_HTML;
-		}
+  return data.find(PHOTON_HTML_MARKUP) != String::npos &&
+         data.find(PHOTON_HTML_START) != String::npos &&
+         data.find(kPhotonXMLMarkup) == String::npos;
+}
 
-		std::transform(data.begin(), data.end(), data.begin(),
-					   [](unsigned char c) { return std::tolower(c); });
+/// @Brief Get the HTML document.
+String get_html_document(String data) noexcept {
+  if (!is_html_document(data)) {
+    return data;
+  }
 
-		if (data.find(PHOTON_HTML_DOCTYPE) != String::npos)
-		{
-			return data.substr(data.find(PHOTON_HTML_DOCTYPE) + strlen(PHOTON_HTML_DOCTYPE));
-		}
-		else
-		{
-			String doc_type = data.substr(0, strlen(PHOTON_HTML_DOCTYPE));
+  auto html = data.c_str();
 
-			std::transform(doc_type.begin(), doc_type.end(), doc_type.begin(),
-						   [](unsigned char c) { return std::tolower(c); });
+  htmlDocPtr doc = htmlReadMemory(html, strlen(html), "input.html", NULL,
+                                  HTML_PARSE_RECOVER | HTML_PARSE_NOERROR |
+                                      HTML_PARSE_NOWARNING);
 
-			return data.substr(data.find(doc_type) + doc_type.size());
-		}
-	}
+  if (!doc) {
+    return PHOTON_EMPTY_HTML;
+  }
 
-	/// @Brief Get HTML document.
-	String get_html_document(String data) noexcept
-	{
-		if (!is_html_document(data))
-		{
-			return PHOTON_EMPTY_HTML;
-		}
+  // Step 2: Dump as well-formed XML (XHTML)
+  xmlChar *xhtmlBuf = nullptr;
+  int xhtmlSize = 0;
+  xmlDocDumpMemoryEnc(doc, &xhtmlBuf, &xhtmlSize, "UTF-8");
 
-		std::transform(data.begin(), data.end(), data.begin(),
-					   [](unsigned char c) { return std::tolower(c); });
+  std::cout << xhtmlBuf << std::endl;
 
-		if (data.find(PHOTON_HTML_DOCTYPE) != String::npos)
-		{
-			return data.substr(data.find(PHOTON_HTML_DOCTYPE) + strlen(PHOTON_HTML_DOCTYPE));
-		}
-		else
-		{
-			String doc_type = data.substr(0, strlen(PHOTON_HTML_DOCTYPE));
+  auto new_str = String(reinterpret_cast<const char *>(xhtmlBuf), xhtmlSize);
 
-			std::transform(doc_type.begin(), doc_type.end(), doc_type.begin(),
-						   [](unsigned char c) { return std::tolower(c); });
+  xmlFree(xhtmlBuf);
+  xmlFreeDoc(doc);
+  xmlCleanupParser();
 
-			return data.substr(data.find(doc_type) + doc_type.size());
-		}
-	}
+  xhtmlBuf = nullptr;
+  doc = nullptr;
 
-	IDOMObject* IDOMObject::make_dom_object(String data)
-	{
-		if (data.empty())
-			return nullptr;
+  if (xhtmlSize < 1) {
+    return PHOTON_EMPTY_HTML;
+  }
 
-		rapidxml::xml_document<char> doc;
-		doc.parse<rapidxml::parse_declaration_node | rapidxml::parse_no_data_nodes>(data.data());
+  return new_str;
+}
 
-		IDOMObject* new_dom = new IDOMObject(doc.first_node("html"));
+IDOMObject *IDOMObject::make_dom_object(String data) {
+  if (data.empty())
+    return nullptr;
 
-		if (!new_dom)
-		{
-			PHOTON_ERROR("DOM allocation failure, probably out of memory.");
-			return nullptr;
-		}
+  try {
+    rapidxml::xml_document<char> doc;
+    doc.parse<rapidxml::parse_declaration_node | rapidxml::parse_no_data_nodes>(
+        data.data());
 
-		return new_dom;
-	}
+    IDOMObject *new_dom = new IDOMObject(doc.document());
+
+    if (!new_dom) {
+      PHOTON_ERROR("DOM allocation failed, out of memory.");
+      return nullptr;
+    }
+
+    return new_dom;
+
+  } catch (...) {
+    PHOTON_ERROR("Failed to parse DOM data, invalid XML format.");
+    return nullptr;
+  }
+}
 } // namespace Photon

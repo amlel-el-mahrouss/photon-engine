@@ -2,7 +2,7 @@
 
 ## Description:
 
-A browser engine written in C++ for NeKernel, Windows, and Linux.
+A browser engine written in C++ for NeKernel, OS X, and Linux.
 
 ## Requirements:
 

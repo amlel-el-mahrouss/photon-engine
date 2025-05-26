@@ -10,7 +10,7 @@
 #pragma once
 
 #include <core/Core.hpp>
-#include <js/JITSpecs.hpp>
+#include <js/JSVirtualMachineJIT.hpp>
 
 #define PHOTON_JS_UNDEFINED "undefined"
 #define PHOTON_JS_NULL		"null"
@@ -34,9 +34,11 @@ namespace Photon
 		explicit IJSVirtualMachine(std::vector<String> js_blob);
 		~IJSVirtualMachine() = default;
 
-		Bool run_script();
-
 	public:
 		PHOTON_COPY_DEFAULT(IJSVirtualMachine);
+	
+	public:
+		Bool run_script();
+
 	};
 } // namespace Photon

@@ -7,5 +7,5 @@
  * =====================================================================
  */
 
-#include <browser/BTab.hpp>
+#include <browser/BrowserTab.hpp>
 

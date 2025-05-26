@@ -8,7 +8,7 @@
  */
 
 #include <dom/IScriptObject.hpp>
-#include <js/JSSpecs.hpp>
+#include <js/JSVirtualMachine.hpp>
 
 namespace Photon
 {
@@ -76,9 +76,10 @@ namespace Photon
 		doc.parse<0>(data.data());
 
 		String name = doc.first_node()->name();
-		const char* cScriptElementName = "script";
 
-		if (name != cScriptElementName)
+		const String kScriptMarkup = "script";
+
+		if (name != kScriptMarkup)
 		{
 			return nullptr;
 		}

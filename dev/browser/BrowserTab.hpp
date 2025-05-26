@@ -13,29 +13,25 @@
 #include <core/URL.hpp>
 #include <dom/IDOMObject.hpp>
 #include <dom/IScriptObject.hpp>
-#include <layout/Layout.hpp>
-
-#include <libxml/HTMLparser.h>
-#include <libxml/xmlsave.h>
-#include <unistd.h>
+#include <layout/RenderSystem+OpenStep.hpp>
 
 namespace Photon
 {
-	class PHOTON_API BTab
+	class PHOTON_API BrowserTab
 	{
 	private:
-		URL			m_tab_url{PHOTON_HTTPS_PROTOCOL};
-		String		m_tab_name{"Loading..."};
-		String		m_html_blob{PHOTON_EMPTY_HTML};
-		IDOMObject* m_dom{nullptr};
-		IPhotonTextDOM* m_document_root{new IPhotonTextDOM()};
-		NSWindow*	m_tab_handle{nullptr};
+		URL				m_tab_url{PHOTON_HTTPS_PROTOCOL};
+		String			m_tab_name{"Loading - Photon"};
+		String			m_html_blob{PHOTON_EMPTY_HTML};
+		IDOMObject*		m_dom{nullptr};
+		IPhotonTextDOM* m_document_root{nullptr};
+		NSWindow*		m_tab_handle{nullptr};
 
 	public:
-		BTab()			= default;
-		virtual ~BTab() = default;
+		BrowserTab()			= default;
+		virtual ~BrowserTab() = default;
 
-		PHOTON_COPY_DEFAULT(BTab);
+		PHOTON_COPY_DEFAULT(BrowserTab);
 
 		bool load(URL url) noexcept
 		{
@@ -45,36 +41,57 @@ namespace Photon
 			if (m_html_blob.empty())
 				return false;
 
+			m_html_blob = get_html_document(m_html_blob);
+
+			if (m_html_blob == PHOTON_EMPTY_HTML)
+				return false;
+
 			m_dom = IDOMObject::make_dom_object(m_html_blob);
-
-
-			int pos_y = 700;
-			int pos_x = 10;
-
-			ShellFactory tab;
 
 			if (m_dom)
 			{
-				if (auto elem = m_dom->get_node("head"); elem)
-				{
-					if (elem->first_node("title") && elem->first_node("title")->value())
-						m_tab_name = elem->first_node("title")->value();
+				auto html = m_dom->get_node("html");
 
-					if (elem->first_node("meta"))
-					{
+				if (!html) {
+					delete m_dom;
+					m_dom = nullptr;
 
-					}
+					this->release();
+
+					return false;
 				}
 
-				auto elem = m_dom->get_node("body");
-
-				if (elem)
+				if (auto elem = html->first_node("head"); elem)
 				{
 					elem = elem->first_node();
 
+					String elem_nm;
+
 					while (elem)
 					{
-						std::string elem_nm = elem->name();
+						elem_nm = elem->name();
+
+						if (elem_nm == "title")
+							m_tab_name = elem->value();
+
+						elem = elem->next_sibling();
+					}
+				}
+
+				if (auto elem = html->first_node("body"); elem)
+				{
+					elem = elem->first_node();
+
+					int pos_y = 730;
+					int pos_x = 10;
+
+					m_document_root = new IPhotonTextDOM();
+
+					String elem_nm;
+
+					while (elem)
+					{
+						elem_nm = elem->name();
 
 						if (elem_nm == "h1")
 						{
@@ -213,9 +230,9 @@ namespace Photon
 							text->set_position(pos_x, pos_y);
 							m_document_root->insert_child_element(text);
 						}
-						else if (elem_nm == "photon-popup" && elem->value())
+						else if (elem_nm == "script" && elem->value())
 						{
-							(void)tab.prompt(m_tab_name, elem->first_attribute("message")->value());
+							/// TODO: Handle script elements
 						}
 						else if (elem_nm == "img")
 						{
@@ -268,12 +285,25 @@ namespace Photon
 
 						elem = elem->next_sibling();
 					}
+
+					ShellFactory shell;
+
+					m_tab_handle = shell.tab(m_tab_name);
+
+#ifdef __PHOTON_APPLE__
+					[m_tab_handle setSubtitle:[NSString stringWithUTF8String:url.get().c_str()]];
+
+					NSToolbar* toolbar				= [[NSToolbar alloc] initWithIdentifier:@"NSToolbarIdentifierTab"];
+					toolbar.allowsUserCustomization = YES;
+					toolbar.displayMode				= NSToolbarDisplayModeIconAndLabel;
+
+					[m_tab_handle setToolbar:toolbar];
+#endif
+
+					m_document_root->insert_element(m_tab_handle);
+
+					return true;
 				}
-
-				m_tab_handle = tab.tab(m_tab_name);
-				m_document_root->insert_element(m_tab_handle);
-
-				return true;
 			}
 
 			return false;
