@@ -14,228 +14,161 @@
 @file
 */
 
-#include <URL.hpp>
-#include <IURLLoader.hpp>
+#include <core/IURLLoader.hpp>
+#include <core/URL.hpp>
+#include <string>
 
-namespace Photon
-{
-	URL::URL(const char* protocol)
-	{
-		m_protocol = protocol;
+namespace Photon {
+URL::URL(const char *protocol) {
+  m_protocol = protocol;
 
-		if (m_protocol.find(":") != String::npos)
-			m_protocol.erase(m_protocol.find(":"));
-	}
+  if (m_protocol.find(":") != String::npos)
+    m_protocol.erase(m_protocol.find(":"));
+}
 
-	URL::~URL() = default;
+URL::~URL() = default;
 
-	String URL::get() noexcept
-	{
-		return m_data;
-	}
+String URL::get() noexcept { return m_data; }
 
-	URL& URL::operator/=(const String& uri)
-	{
-		this->operator/=(uri.c_str());
+URL &URL::operator/=(const String &uri) {
+  this->operator/=(uri.c_str());
 
-		return *this;
-	}
+  return *this;
+}
 
-	URL& URL::operator/=(const char* uri)
-	{
-		if (!uri ||
-			*uri == 0)
-			return *this;
+URL &URL::operator/=(const char *uri) {
+  if (!uri || *uri == 0)
+    return *this;
 
-		String uri_str = uri;
+  String uri_str = uri;
 
-		if (uri_str.find(":") != String::npos)
-		{
-			m_data = uri_str.substr(0, uri_str.find(":"));
-			m_port = uri_str.substr(uri_str.find(":") + 1);
-		}
-		else
-		{
-			m_data = uri_str;
-		}
+  if (uri_str.find(":") != String::npos) {
+    m_data = uri_str.substr(0, uri_str.find(":"));
+    m_port = uri_str.substr(uri_str.find(":") + 1);
+  } else {
+    m_data = uri_str;
+  }
 
-		return *this;
-	}
+  return *this;
+}
 
-	String URL::port() noexcept
-	{
-		return m_port;
-	}
+String URL::port() noexcept { return m_port; }
 
-	String URL::protocol() noexcept
-	{
-		return m_protocol;
-	}
+String URL::protocol() noexcept { return m_protocol; }
 
-	String URL::send(String data)
-	{
-		if (this->protocol() == PHOTON_HTTPS_PROTOCOL ||
-			this->protocol() == PHOTON_HTTP_PROTOCOL)
-		{
-			try
-			{
-				if (this->protocol() == PHOTON_HTTP_PROTOCOL)
-				{
-					Photon::HTTP::PHOTON_HTTP_PORT = PHOTON_USE_HTTP;
-				}
-				else
-				{
-					Photon::HTTP::PHOTON_HTTP_PORT = PHOTON_USE_HTTPS;
-				}
+String URL::send(String data) {
+  if (this->protocol() == PHOTON_HTTPS_PROTOCOL ||
+      this->protocol() == PHOTON_HTTP_PROTOCOL) {
+    try {
+      if (this->protocol() == PHOTON_HTTP_PROTOCOL) {
+        Photon::HTTP::PHOTON_HTTP_PORT = PHOTON_USE_HTTP;
+      } else {
+        Photon::HTTP::PHOTON_HTTP_PORT = PHOTON_USE_HTTPS;
+      }
 
-				URL		   url(this->protocol().c_str());
-				IURLLoader url_loader;
+      URL url(this->protocol().c_str());
+      IURLLoader url_loader;
 
-				String root = "/";
+      String root = "/";
 
-				String content = this->get();
+      String content = this->get();
 
-				if (content.find("/") != std::string::npos)
-				{
-					url_loader.set_endpoint(content.substr(0, content.find("/")));
+      if (content.find("/") != std::string::npos) {
+        url_loader.set_endpoint(content.substr(0, content.find("/")));
 
-					root = content.substr(content.find("/"));
+        root = content.substr(content.find("/"));
 
-					// remove port.
-					if (root.find(":") != String::npos)
-						root.erase(root.find(":"));
-				}
-				else
-				{
-					url_loader.set_endpoint(content);
-				}
+        // remove port.
+        if (root.find(":") != String::npos)
+          root.erase(root.find(":"));
+      } else {
+        url_loader.set_endpoint(content);
+      }
 
-				url /= root;
+      url /= root;
 
-				auto http = url_loader.post(url, data, true);
+      auto http = url_loader.post(url, data, true);
 
-				if (http.find("\r\n\r\n") != String::npos)
-				{
-					auto body = http.substr(http.find("\r\n\r\n") + strlen("\r\n\r\n"));
-					return body;
-				}
-			}
-			catch (BrowserError err)
-			{
-				return "";
-			}
-		}
+      if (http.find("\r\n\r\n") != String::npos) {
+        auto body = http.substr(http.find("\r\n\r\n") + strlen("\r\n\r\n"));
+        return body;
+      }
+    } catch (BrowserError err) {
+      return "";
+    }
+  }
 
-		return "";
-	}
+  return "";
+}
 
-	String URL::fetch()
-	{
-		if (this->protocol() == PHOTON_HTTPS_PROTOCOL ||
-			this->protocol() == PHOTON_HTTP_PROTOCOL)
-		{
-			try
-			{
-				if (this->protocol() == PHOTON_HTTP_PROTOCOL)
-				{
-					Photon::HTTP::PHOTON_HTTP_PORT = PHOTON_USE_HTTP;
-				}
-				else
-				{
-					Photon::HTTP::PHOTON_HTTP_PORT = PHOTON_USE_HTTPS;
-				}
+String URL::fetch() {
+  if (this->protocol() == PHOTON_HTTPS_PROTOCOL ||
+      this->protocol() == PHOTON_HTTP_PROTOCOL) {
+    try {
+      if (this->protocol() == PHOTON_HTTP_PROTOCOL) {
+        Photon::HTTP::PHOTON_HTTP_PORT = PHOTON_USE_HTTP;
+      } else {
+        Photon::HTTP::PHOTON_HTTP_PORT = PHOTON_USE_HTTPS;
+      }
 
-				URL		   url(this->protocol().c_str());
-				IURLLoader url_loader;
+      URL url(this->protocol().c_str());
+      IURLLoader url_loader;
 
-				String root = "/";
+      String root = "/";
 
-				String content = this->get();
+      String content = this->get();
 
-				if (content.find("/") != std::string::npos)
-				{
-					url_loader.set_endpoint(content.substr(0, content.find("/")));
+      if (content.find("/") != std::string::npos) {
+        url_loader.set_endpoint(content.substr(0, content.find("/")));
 
-					root = content.substr(content.find("/"));
+        root = content.substr(content.find("/"));
 
-					// remove port.
-					if (root.find(":") != String::npos)
-						root.erase(root.find(":"));
-				}
-				else
-				{
-					url_loader.set_endpoint(content);
-				}
+        // remove port.
+        if (root.find(":") != String::npos)
+          root.erase(root.find(":"));
+      } else {
+        url_loader.set_endpoint(content);
+      }
 
-				url /= root;
+      url /= root;
 
-				auto http = url_loader.get(url, false);
+      auto http = url_loader.get(url, false);
 
-				if (http.find("\r\n\r\n") != String::npos)
-				{
-					auto body = http.substr(http.find("\r\n\r\n") + strlen("\r\n\r\n"));
-					return body;
-				}
-			}
-			catch (BrowserError err)
-			{
-				PHOTON_GET_DATA_DIR(cur_work_dir);
+      if (http.find("\r\n\r\n") != String::npos) {
+        auto body = http.substr(http.find("\r\n\r\n") + strlen("\r\n\r\n"));
+        return body;
+      }
+    } catch (BrowserError err) {
+      return PHOTON_EMPTY_HTML;
+    }
 
-				cur_work_dir += "/.Rsrc/DialogError.html";
+    return PHOTON_EMPTY_HTML;
+  } else if (this->protocol() == PHOTON_FILE_PROTOCOL) {
+    std::basic_ifstream<char> file(this->get(), std::ios::binary);
 
-				std::ifstream err_html(cur_work_dir);
+    if (!file.good()) {
+      return PHOTON_EMPTY_HTML;
+    }
 
-				if (err_html.is_open())
-				{
-					std::stringstream ss;
-					ss << err_html.rdbuf();
+    std::stringstream ss;
+    ss << file.rdbuf();
 
-					auto output = ss.str();
+    auto body = ss.str();
 
-					output = photon_replace_format("ERR_CODE", output, err.what());
+	std::cout << body;
 
-					return output;
-				}
+    return body;
+  } else if (this->protocol() == PHOTON_MAIL_PROTOCOL) {
+    return PHOTON_EMPTY_HTML;
+  } else if (this->protocol() == PHOTON_PHOTON_PROTOCOL) {
+    return PHOTON_EMPTY_HTML;
+  } else if (this->protocol() == PHOTON_JS_PROTOCOL) {
+    return PHOTON_EMPTY_HTML;
+  }
 
-				return PHOTON_EMPTY_HTML;
-			}
+  return PHOTON_EMPTY_HTML;
+}
 
-			return PHOTON_EMPTY_HTML;
-		}
-		else if (this->protocol() == PHOTON_FILE_PROTOCOL)
-		{
-            std::ifstream file(this->get());
-
-			if (!file.good())
-			{
-			    ShellFactory helper;
-
-    #ifdef PHOTON_WINDOWS
-			    helper.open(this->get(), nullptr);
-    #else
-			    helper.open(this->get().c_str());
-    #endif
-
-			    return PHOTON_EMPTY_HTML;
-			}
-
-			std::stringstream ss;
-			ss << file.rdbuf();
-
-			auto body = ss.str();
-			return body;
-        }
-		else if (this->protocol() == PHOTON_PHOTON_PROTOCOL)
-		{
-			return PHOTON_EMPTY_HTML;
-		}
-
-		return PHOTON_EMPTY_HTML;
-	}
-
-	URL& URLError::get()
-	{
-		return m_uri;
-	}
+URL &URLError::get() { return m_uri; }
 
 } // namespace Photon

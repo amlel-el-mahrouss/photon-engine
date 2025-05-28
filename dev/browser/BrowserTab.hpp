@@ -28,7 +28,7 @@ namespace Photon
 		NSWindow*		m_tab_handle{nullptr};
 
 	public:
-		BrowserTab()			= default;
+		BrowserTab()		  = default;
 		virtual ~BrowserTab() = default;
 
 		PHOTON_COPY_DEFAULT(BrowserTab);
@@ -38,28 +38,17 @@ namespace Photon
 			m_html_blob = url.fetch();
 			m_tab_url	= url;
 
-			if (m_html_blob.empty())
-				return false;
-
-			m_html_blob = get_html_document(m_html_blob);
-
-			if (m_html_blob == PHOTON_EMPTY_HTML)
-				return false;
-
 			m_dom = IDOMObject::make_dom_object(m_html_blob);
+
+			if (!m_dom)
+			{
+				m_html_blob = get_html_document(m_html_blob);
+				m_dom		= IDOMObject::make_dom_object(m_html_blob);
+			}
 
 			if (m_dom)
 			{
-				auto html = m_dom->get_node("html");
-
-				if (!html) {
-					delete m_dom;
-					m_dom = nullptr;
-
-					this->release();
-
-					return false;
-				}
+				auto html = m_dom->get_node(nullptr);
 
 				if (auto elem = html->first_node("head"); elem)
 				{
@@ -192,6 +181,10 @@ namespace Photon
 							text->set_position(pos_x, pos_y);
 
 							m_document_root->insert_child_element(text);
+						}
+						else if (elem_nm == "br")
+						{
+							pos_y -= 13.28;
 						}
 						else if (elem_nm == "h6")
 						{

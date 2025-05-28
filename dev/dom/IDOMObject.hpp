@@ -12,11 +12,11 @@
 #include <core/Core.hpp>
 #include <rapidxml/rapidxml.hpp>
 
-#define PHOTON_DOM_OBJECT	 (0U)
+#define PHOTON_DOM_OBJECT (0U)
 
-#define PHOTON_HTML_START	 "<html>"
+#define PHOTON_HTML_START  "<html>"
 #define PHOTON_HTML_MARKUP "<!doctype html>"
-#define PHOTON_HTML_END	 "</html>"
+#define PHOTON_HTML_END	   "</html>"
 
 namespace Photon
 {
@@ -98,7 +98,7 @@ namespace Photon
 			PHOTON_ASSERT(m_node);
 
 			if (!attrib_name)
-				return m_node;
+				return m_node->first_node();
 
 			return m_node->first_node(attrib_name);
 		}

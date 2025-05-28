@@ -30,6 +30,10 @@
 #define PHOTON_MAIL_PROTOCOL ("mailto")
 #endif // !PHOTON_MAIL_PROTOCOL
 
+#ifndef PHOTON_JS_PROTOCOL
+#define PHOTON_JS_PROTOCOL ("javascript")
+#endif // !PHOTON_JS_PROTOCOL
+
 #ifndef PHOTON_PHOTON_PROTOCOL
 #define PHOTON_PHOTON_PROTOCOL ("photon")
 #endif // !PHOTON_PHOTON_PROTOCOL

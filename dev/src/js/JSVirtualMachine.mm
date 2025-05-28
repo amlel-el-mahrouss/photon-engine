@@ -12,25 +12,20 @@
 using namespace Photon;
 
 IJSVirtualMachine::IJSVirtualMachine(std::vector<String> js_blob)
-	: mBlob(js_blob)
-{
-    PHOTON_INFO("Allocated JavaScript Context!");
+    : mBlob(js_blob) {
+  PHOTON_INFO("Allocated JavaScript Context!");
 }
 
-Bool IJSVirtualMachine::run_script()
-{
-    if (mBlob.empty())
-    {
-        PHOTON_ERROR("No JavaScript code to run!");
-        return false;
-    }
+Bool IJSVirtualMachine::run_script() {
+  if (mBlob.empty()) {
+    PHOTON_ERROR("No JavaScript code to run!");
+    return false;
+  }
 
-    PHOTON_INFO("Running JavaScript code...");
+  PHOTON_INFO("Running JavaScript code...");
 
-    for (auto& line : mBlob)
-    {
-        
-    }
+  for (auto &line : mBlob) {
+  }
 
-    return true;
+  return true;
 }

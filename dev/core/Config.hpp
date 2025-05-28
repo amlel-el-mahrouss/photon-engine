@@ -42,7 +42,7 @@ typedef uint16_t uuid_string_t[37];
 #define SD_SEND SHUT_WR
 #define SD_READ SHUT_RD
 
-#define INVALID_SOCKET ((uintptr_t) - 1)
+#define INVALID_SOCKET ((uintptr_t)-1)
 
 #include <tuple>
 #include <array>

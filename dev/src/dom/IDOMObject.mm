@@ -71,9 +71,13 @@ IDOMObject *IDOMObject::make_dom_object(String data) {
     return nullptr;
 
   try {
+    std::vector<char> buffer(data.begin(), data.end());
+    buffer.push_back('\0'); // Null-terminate the string for rapidxml
+
     rapidxml::xml_document<char> doc;
-    doc.parse<rapidxml::parse_declaration_node | rapidxml::parse_no_data_nodes>(
-        data.data());
+    
+    doc.parse<0>(
+        buffer.data());
 
     IDOMObject *new_dom = new IDOMObject(doc.document());
 

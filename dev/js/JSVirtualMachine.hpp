@@ -36,9 +36,8 @@ namespace Photon
 
 	public:
 		PHOTON_COPY_DEFAULT(IJSVirtualMachine);
-	
+
 	public:
 		Bool run_script();
-
 	};
 } // namespace Photon
