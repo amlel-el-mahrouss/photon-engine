@@ -6,8 +6,14 @@
  *
  * =====================================================================
  */
-
+ 
 #include <js/JSVirtualMachine.hpp>
+#include <variant>
+#include <vector>
+#include <unordered_map>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 using namespace Photon;
 
@@ -17,15 +23,10 @@ IJSVirtualMachine::IJSVirtualMachine(std::vector<String> js_blob)
 }
 
 Bool IJSVirtualMachine::run_script() {
-  if (mBlob.empty()) {
-    PHOTON_ERROR("No JavaScript code to run!");
-    return false;
-  }
+    if (mBlob.empty()) return false;
 
-  PHOTON_INFO("Running JavaScript code...");
+    for (auto& line : mBlob) {
+    }
 
-  for (auto &line : mBlob) {
-  }
-
-  return true;
+    return true;
 }

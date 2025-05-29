@@ -11,6 +11,7 @@
 
 #include <core/Core.hpp>
 #include <rapidxml/rapidxml.hpp>
+#include <rapidxml/rapidxml_print.hpp>
 
 #define PHOTON_DOM_OBJECT (0U)
 
@@ -84,7 +85,7 @@ namespace Photon
 
 		virtual String value()
 		{
-			return this->get_node(nullptr)->value();
+			return this->m_node->value();
 		}
 
 		virtual rapidxml::xml_attribute<char>* get_attribute(const char* attrib_name)
@@ -114,5 +115,5 @@ namespace Photon
 	Bool is_html_document(String the_xml_blob) noexcept;
 
 	/// @brief Get HTML document from xml blob.
-	String get_html_document(String the_xml_blob) noexcept;
+	String get_html_document(String the_xml_blob);
 } // namespace Photon

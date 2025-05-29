@@ -28,7 +28,7 @@ bool is_html_document(String data) noexcept {
 }
 
 /// @Brief Get the HTML document.
-String get_html_document(String data) noexcept {
+String get_html_document(String data) {
   if (!is_html_document(data)) {
     return data;
   }
@@ -75,19 +75,17 @@ IDOMObject *IDOMObject::make_dom_object(String data) {
     buffer.push_back('\0'); // Null-terminate the string for rapidxml
 
     rapidxml::xml_document<char> doc;
-    
-    doc.parse<0>(
-        buffer.data());
+
+    doc.parse<0>(buffer.data());
 
     IDOMObject *new_dom = new IDOMObject(doc.document());
 
     if (!new_dom) {
-      PHOTON_ERROR("DOM allocation failed, out of memory.");
+      PHOTON_ERROR("DOM couldn't be allocated, probably out of memory.");
       return nullptr;
     }
 
     return new_dom;
-
   } catch (...) {
     PHOTON_ERROR("Failed to parse DOM data, invalid XML format.");
     return nullptr;
