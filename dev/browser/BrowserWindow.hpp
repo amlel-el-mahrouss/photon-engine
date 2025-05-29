@@ -264,13 +264,9 @@ namespace Photon
 									}
 								}
 
-								String in = "<script>";
-								in += elem->value();
-								in += "</script>";
-
 								if (!elem->first_attribute("defer"))
 								{
-									auto script = IScriptObject::make_script_object(in);
+									auto script = IScriptObject::make_script_object(elem->value());
 
 									if (script)
 									{

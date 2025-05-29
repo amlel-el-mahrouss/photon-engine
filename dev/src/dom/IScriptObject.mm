@@ -8,7 +8,7 @@
  */
 
 #include <dom/IScriptObject.hpp>
-#include <js/JSVirtualMachine.hpp>
+#include <memory>
 
 namespace Photon {
 IScriptObject::IScriptObject(rapidxml::xml_node<char> *p_node)
@@ -17,25 +17,10 @@ IScriptObject::IScriptObject(rapidxml::xml_node<char> *p_node)
 Int32 IScriptObject::node_type() { return PHOTON_SCRIPT_OBJECT; }
 
 Bool IScriptObject::run_script() {
-  std::vector<String> blob;
+  if (!m_vm)
+    return false;
 
-  String node_data;
-  String in_node_data = this->value();
-
-  std::cout << in_node_data;
-
-  for (auto &ch : in_node_data) {
-    if (ch == '\n') {
-      blob.push_back(node_data);
-      node_data.clear();
-      continue;
-    }
-
-    node_data.push_back(ch);
-  }
-
-  IJSVirtualMachine prog(blob);
-  return prog.run_script();
+  return m_vm->run_script();
 }
 
 IScriptObject *IScriptObject::make_script_object(String data) {
@@ -43,8 +28,25 @@ IScriptObject *IScriptObject::make_script_object(String data) {
     return nullptr;
 
   try {
+    std::vector<String> blob;
+    String node_data;
+
+    for (auto &ch : data) {
+      if (ch == '\n') {
+        blob.push_back(node_data);
+        node_data.clear();
+        continue;
+      }
+
+      node_data.push_back(ch);
+    }
+
+    String new_data = "<script>";
+    new_data += data;
+    new_data += "</script>";
+
     rapidxml::xml_document<char> doc;
-    doc.parse<0>(data.data());
+    doc.parse<0>(new_data.data());
 
     String name = doc.first_node()->name();
 
@@ -54,9 +56,9 @@ IScriptObject *IScriptObject::make_script_object(String data) {
       return nullptr;
     }
 
-    std::vector<String> blob;
-
     IScriptObject *new_dom = new IScriptObject(doc.first_node());
+
+    new_dom->m_vm = std::make_unique<IJSVirtualMachine>(blob);
 
     if (!new_dom) {
       PHOTON_ERROR("Script DOM couldn't be allocated, probably out of memory.");

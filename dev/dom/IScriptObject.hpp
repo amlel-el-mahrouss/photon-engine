@@ -13,6 +13,7 @@
 /// @brief <script> element.
 
 #include <dom/IDOMObject.hpp>
+#include <js/JSVirtualMachine.hpp>
 
 #define PHOTON_SCRIPT_OBJECT (1)
 
@@ -22,6 +23,8 @@ namespace Photon
 
 	class IScriptObject final : public IDOMObject
 	{
+  		std::unique_ptr<IJSVirtualMachine> m_vm;
+
 		explicit IScriptObject(rapidxml::xml_node<char>* p_node);
 
 	public:

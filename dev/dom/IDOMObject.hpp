@@ -10,6 +10,7 @@
 #pragma once
 
 #include <core/Core.hpp>
+#include <memory>
 #include <rapidxml/rapidxml.hpp>
 #include <rapidxml/rapidxml_print.hpp>
 
