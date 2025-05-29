@@ -22,6 +22,7 @@
 
 #define PHOTON_USE_HTTPS (443)
 #define PHOTON_USE_HTTP	 (80)
+#define PHOTON_HTTP_AGENT "Photon/1.0.0 (Photon) Photon/1.0.0 Version/1.0.0"
 
 namespace Photon::HTTP
 {
@@ -67,8 +68,8 @@ namespace Photon::HTTP
 				return {.t_name = "WEBP Image", .t_mime = "image/webp"};
 			else if (strstr(extension.c_str(), ".exe"))
 				return {.t_name = "Microsoft Portable Executable", .t_mime = "application/vnd.microsoft.executable"};
-			else if (strstr(extension.c_str(), ".pef"))
-				return {.t_name = "Photon Preferred Executable Format", .t_mime = "application/vnd.zka.executable"};
+			else if (strstr(extension.c_str(), ".exec"))
+				return {.t_name = "NeKernel Preferred Executable Format", .t_mime = "application/vnd.ne.executable"};
 			else if (strstr(extension.c_str(), ".jpg"))
 				return {.t_name = "JPEG Image", .t_mime = "image/jpeg"};
 			else if (strstr(extension.c_str(), ".zip"))
@@ -187,7 +188,9 @@ namespace Photon::HTTP
 			request += "Host: ";
 			request += host;
 			request += "\r\n";
-			request += "User-Agent: Photon/1.0.0 (Photon) Photon/1.0.0 Version/1.0.0\r\n";
+			request += "User-Agent: ";
+			request += PHOTON_HTTP_AGENT;
+			request += "\r\n";
 
 			MIMEFactory factory;
 			auto		mime_struct = factory(const_cast<char*>(path.data()));

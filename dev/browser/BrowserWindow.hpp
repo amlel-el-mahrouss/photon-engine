@@ -12,8 +12,9 @@
 #include <core/Core.hpp>
 #include <core/URL.hpp>
 #include <dom/IDOMObject.hpp>
-#include <js/JSVirtualMachine.hpp>
+#include <dom/IScriptObject.hpp>
 #include <layout/RenderSystem+OpenStep.hpp>
+
 #include <sstream>
 #include <string>
 
@@ -23,7 +24,7 @@ namespace Photon
 	typedef NSWindow* PhotonWindowHandle;
 #endif
 
-	class PHOTON_API BrowserTab
+	class PHOTON_API BrowserWindow
 	{
 	private:
 		URL				   m_tab_url{PHOTON_HTTPS_PROTOCOL};
@@ -34,10 +35,10 @@ namespace Photon
 		PhotonWindowHandle m_tab_handle{nullptr};
 
 	public:
-		BrowserTab()		  = default;
-		virtual ~BrowserTab() = default;
+		BrowserWindow()			 = default;
+		virtual ~BrowserWindow() = default;
 
-		PHOTON_COPY_DEFAULT(BrowserTab);
+		PHOTON_COPY_DEFAULT(BrowserWindow);
 
 		bool load(URL url)
 		{
@@ -49,12 +50,6 @@ namespace Photon
 				try
 				{
 					m_dom = IDOMObject::make_dom_object(m_html_blob);
-
-					if (!m_dom)
-					{
-						m_html_blob = get_html_document(m_html_blob);
-						m_dom		= IDOMObject::make_dom_object(m_html_blob);
-					}
 				}
 				catch (...)
 				{
@@ -241,7 +236,47 @@ namespace Photon
 							}
 							else if (elem_nm == "script" && elem->value())
 							{
-								
+								if (elem->first_attribute("href"))
+								{
+									String script_src = elem->first_attribute("href")->value();
+
+									if (script_src.starts_with("http://") ||
+										script_src.starts_with("https://"))
+									{
+										auto src = m_tab_url.get() + script_src;
+
+										Photon::URL url(m_tab_url.protocol().c_str());
+										url /= src;
+
+										String in;
+
+										in = url.fetch();
+
+										if (!elem->first_attribute("defer"))
+										{
+											auto script_inside = IScriptObject::make_script_object(in);
+
+											if (script_inside)
+											{
+												script_inside->run_script();
+											}
+										}
+									}
+								}
+
+								String in = "<script>";
+								in += elem->value();
+								in += "</script>";
+
+								if (!elem->first_attribute("defer"))
+								{
+									auto script = IScriptObject::make_script_object(in);
+
+									if (script)
+									{
+										script->run_script();
+									}
+								}
 							}
 							else if (elem_nm == "img")
 							{

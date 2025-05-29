@@ -107,6 +107,13 @@ String URL::fetch() {
     try {
       if (this->protocol() == PHOTON_HTTP_PROTOCOL) {
         Photon::HTTP::PHOTON_HTTP_PORT = PHOTON_USE_HTTP;
+
+        ShellFactory shell;
+        if (shell.prompt("HTTP Warning - Photon",
+                         "Photon is currently connecting via an HTTP route, "
+                         "are you sure to continue?") == "NO") {
+          return PHOTON_EMPTY_HTML;
+        }
       } else {
         Photon::HTTP::PHOTON_HTTP_PORT = PHOTON_USE_HTTPS;
       }
@@ -155,7 +162,7 @@ String URL::fetch() {
 
     auto body = ss.str();
 
-	std::cout << body;
+    std::cout << body;
 
     return body;
   } else if (this->protocol() == PHOTON_MAIL_PROTOCOL) {

@@ -8,6 +8,7 @@
  */
  
 #include <js/JSVirtualMachine.hpp>
+#include <core/IHTTPProtocol.hpp>
 #include <variant>
 #include <vector>
 #include <unordered_map>
@@ -26,6 +27,7 @@ Bool IJSVirtualMachine::run_script() {
     if (mBlob.empty()) return false;
 
     for (auto& line : mBlob) {
+      
     }
 
     return true;

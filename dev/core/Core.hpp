@@ -77,6 +77,9 @@ namespace Photon
 		ShellFactory& operator=(const ShellFactory&) = default;
 		ShellFactory(const ShellFactory&)			 = default;
 
+	public:
+		static std::vector<String> kPermsList;
+
 	private:
 		NSWindow*	window{nullptr};
 		NSScroller* scroller{nullptr};
@@ -120,10 +123,11 @@ namespace Photon
 		String prompt(const String title, const String text = "")
 		{
 			NSAlert* alert = [[NSAlert alloc] init];
+
 			[alert setMessageText:[NSString stringWithUTF8String:((!title.empty()) ? title.c_str() : "Photon")]];
 			[alert setInformativeText:[NSString stringWithUTF8String:text.c_str()]];
-			[alert addButtonWithTitle:@"OK"];
-			[alert addButtonWithTitle:@"Cancel"];
+			[alert addButtonWithTitle:@"YES"];
+			[alert addButtonWithTitle:@"NO"];
 			[alert setAlertStyle:NSAlertStyleInformational];
 
 			NSModalResponse response = [alert runModal];
@@ -133,12 +137,10 @@ namespace Photon
 
 		bool grant_or_fail(const String permission_name)
 		{
-			static std::vector<String> kPermsList;
-
 			if (std::find(kPermsList.cbegin(), kPermsList.cend(), permission_name) != kPermsList.end())
 				return true;
 
-			if (this->prompt("Permission Manager", "The page is asking for: " + permission_name + "\nAccept?") == "NO")
+			if (this->prompt("Photon - Security", "The page is asking for: " + permission_name + "\nAccept?") == "NO")
 				return false;
 
 			kPermsList.push_back(permission_name);

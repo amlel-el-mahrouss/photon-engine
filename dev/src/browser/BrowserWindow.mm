@@ -7,4 +7,4 @@
  * =====================================================================
  */
 
-#include <browser/BrowserTab.hpp>
+#include <browser/BrowserWindow.hpp>
