@@ -23,7 +23,7 @@ namespace Photon
 
 	class IScriptObject final : public IDOMObject
 	{
-  		std::unique_ptr<IJSVirtualMachine> m_vm;
+  		std::unique_ptr<JSVirtualMachine> m_vm;
 
 		explicit IScriptObject(rapidxml::xml_node<char>* p_node);
 
@@ -33,6 +33,6 @@ namespace Photon
 		Int32				  node_type() override;
 		static IScriptObject* make_script_object(String data);
 
-		Bool run_script();
+		Bool execute();
 	};
 } // namespace Photon

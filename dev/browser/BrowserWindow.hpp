@@ -20,9 +20,7 @@
 
 namespace Photon
 {
-#ifdef __PHOTON_APPLE__
 	typedef NSWindow* PhotonWindowHandle;
-#endif
 
 	class PHOTON_API BrowserWindow
 	{
@@ -258,7 +256,7 @@ namespace Photon
 
 											if (script_inside)
 											{
-												script_inside->run_script();
+												script_inside->execute();
 											}
 										}
 									}
@@ -270,7 +268,7 @@ namespace Photon
 
 									if (script)
 									{
-										script->run_script();
+										script->execute();
 									}
 								}
 							}

@@ -19,7 +19,6 @@
         "-framework AVFoundation",
         "-framework AVKit",
         "$(pkg-config openssl --cflags --libs)",
-        "$(pkg-config --cflags --libs gtk+-3.0)",
         "$(xml2-config --cflags --libs)"
     ],
     "cpp_macros": [

@@ -87,7 +87,6 @@ IDOMObject *IDOMObject::make_dom_object(String data) {
 
     return new_dom;
   } catch (...) {
-    PHOTON_ERROR("Failed to parse DOM data, invalid XML format.");
     return nullptr;
   }
 }

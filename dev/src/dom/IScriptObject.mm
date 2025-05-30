@@ -16,11 +16,11 @@ IScriptObject::IScriptObject(rapidxml::xml_node<char> *p_node)
 
 Int32 IScriptObject::node_type() { return PHOTON_SCRIPT_OBJECT; }
 
-Bool IScriptObject::run_script() {
+Bool IScriptObject::execute() {
   if (!m_vm)
     return false;
 
-  return m_vm->run_script();
+  return m_vm->execute();
 }
 
 IScriptObject *IScriptObject::make_script_object(String data) {
@@ -58,7 +58,7 @@ IScriptObject *IScriptObject::make_script_object(String data) {
 
     IScriptObject *new_dom = new IScriptObject(doc.first_node());
 
-    new_dom->m_vm = std::make_unique<IJSVirtualMachine>(blob);
+    new_dom->m_vm = std::make_unique<JSVirtualMachine>(blob);
 
     if (!new_dom) {
       PHOTON_ERROR("Script DOM couldn't be allocated, probably out of memory.");
