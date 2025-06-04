@@ -26,7 +26,6 @@
 #include <cstdint>
 
 #include <spdlog/spdlog.h>
-#include <uuid/uuid.h>
 
 #include <uuid/uuid.h>
 
