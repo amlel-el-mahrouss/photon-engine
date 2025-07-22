@@ -1,6 +1,10 @@
-# NeKernel's Photon.
+# NeKernel.org Photon.
 
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
+
+## Notice:
+
+Photon will be moved to its own organization on GitHub! Expect it to happen near September-October.
 
 ## Brief
 
